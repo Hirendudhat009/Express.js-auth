@@ -1,0 +1,262 @@
+openapi: "3.0.2"
+info:
+  title: API Title
+  version: "1.0"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      description: "#### Example: Bearer [TOKEN]"
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    Success:
+      description: success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: success
+
+    UnauthorizedError:
+      description: |
+        - Enter valid OTP 
+        - This refresh token is expired, please login
+        - Unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Unauthorized
+
+    ConflictError:
+      description: |
+        - This email is already exist
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: conflict error
+
+    NotFoundError:
+      description: |
+        - This plan is not exist
+        - This place is not exist
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Not Found
+
+    UserNotFoundError:
+      description: |
+        - This user is not exist
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: integer
+                example: Not Found
+
+    BadRequestError:
+      description: |
+        - bad request error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: bad request error
+
+    UnprocessableEntity:
+      description: Unprocessable Entity
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: validation error
+
+    RegisterResponse:
+      description: success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Account created successfully
+
+    GetLoginResponse:
+      description: success
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: login successfully
+              data:
+                type: object
+                properties:
+                  userId:
+                    type: integer
+                    example: 1
+                  email:
+                    type: string
+                    example: iroid@mailinator.com
+                  fullname:
+                    type: string
+                    example: hiren
+                  joinedAt:
+                    type: number
+                    example: 1675492589
+
+                  authentication:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjo0LCJmdWxsbmFtZSI6bnVsbCwiYmlvIjpudWxsLCJlbWFpbCI6Imlyb2lkMTJAbWFpbGluYXRvci5jb20iLCJwYXNzd29yZCI6InBhc3N3b3JkIiwicHJvZmlsZUltYWdlIjpudWxsLCJsYXRpdHVkZSI6bnVsbCwibG9uZ2l0dWRlIjpudWxsLCJhZGRyZXNzIjpudWxsLCJmYXZvcml0ZURyaW5rIjpudWxsLCJ2ZXJpZmljYXRpb25PdHAiOjgyMDg2LCJ0YWdzIjpudWxsLCJhZ2UiOm51bGwsImlzQWN0aXZlIjowLCJjcmVhdGVkQXQiOiIyMDIyLTA1LTE5VDEwOjExOjA3LjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIyLTA1LTE5VDEwOjE4OjM5LjAwMFoifSwianRpIjoiWnZkRXBkUFBVM29saXRpUjJxMk9KenFVU0RGM3Qyb3l0bHVESkFHVHJtVDhQeW5CUGFYelNQUFNTazhxMmhwd2lwaE1NU1RqOG9iIiwiaWF0IjoxNjUyOTU2NTUyLCJleHAiOjE2ODQ1MTQxNTJ9.hgr6Y6Yb3eofpGiib56_R4XaDa5rrDsmOoUJQoRj838
+                      refreshToken:
+                        type: string
+                        example: c9tSCyBB18PVJUOKUcvFAsqtNmo7pWvhTIlj7m6mWCesxgAcwcxoYSeweX2vugGHaMrkvimh6B1
+                      expiresAt:
+                        type: integer
+                        example: 1682602683
+
+paths:
+  /users/signup:
+    post:
+      summary: Register service
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullname:
+                  type: string
+                  example: John corner
+                email:
+                  type: string
+                  format: email
+                  example: hiren@mailinator.com
+                password:
+                  type: string
+                  example: password
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          $ref: "#/components/responses/Success"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "409":
+          $ref: "#/components/responses/ConflictError"
+
+  /users/login:
+    post:
+      summary: Login service
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: hiren@mailinator.com
+                password:
+                  type: string
+                  format: email
+                  example: password
+              required:
+                - email
+                - password
+      responses:
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "200":
+          $ref: "#/components/responses/GetLoginResponse"
+
+  /users/logout:
+    post:
+      summary: Logout
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceId:
+                  type: string
+                  example: G4urR2TanUp92389lpvcN9a3
+              required:
+                - deviceId
+      responses:
+        "200":
+          $ref: "#/components/responses/Success"
+
+  /users/me:
+    get:
+      summary: Get user profile details
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      responses:
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /random-joke:
+    get:
+      summary: Get random jokes
+      security:
+        - bearerAuth: []
+      tags:
+        - Random Jokes
+      responses:
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
